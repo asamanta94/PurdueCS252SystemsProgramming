@@ -1,0 +1,25 @@
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+  -nan    0.000000           0         3           read
+  -nan    0.000000           0         7           open
+  -nan    0.000000           0         7           close
+  -nan    0.000000           0        45        17 stat
+  -nan    0.000000           0         5           fstat
+  -nan    0.000000           0        12           lstat
+  -nan    0.000000           0        18           mmap
+  -nan    0.000000           0        10           mprotect
+  -nan    0.000000           0         2           munmap
+  -nan    0.000000           0         6           brk
+  -nan    0.000000           0         9           rt_sigaction
+  -nan    0.000000           0        33        18 access
+  -nan    0.000000           0         1           getpid
+  -nan    0.000000           0         3           vfork
+  -nan    0.000000           0         2           execve
+  -nan    0.000000           0         3           wait4
+  -nan    0.000000           0         2           unlink
+  -nan    0.000000           0         2           readlink
+  -nan    0.000000           0         1           getrlimit
+  -nan    0.000000           0         2           arch_prctl
+  -nan    0.000000           0         1           setrlimit
+------ ----------- ----------- --------- --------- ----------------
+100.00    0.000000                   174        35 total

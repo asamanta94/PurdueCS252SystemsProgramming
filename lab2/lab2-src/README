@@ -1,0 +1,4 @@
+NAME: ARITRA SAMANTA
+LOGIN: asamanta
+
+The scripts written according to the conditions provided in the lab are working. In the script pwcheck.sh, if the passwordfile does not exist, then it will print an error message. In the script backup.sh, if the arguments are not provided, or if the arguments provided are of incorrect type, then the program exits with status 0. These are the only extra features added. 

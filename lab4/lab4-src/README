@@ -1,0 +1,16 @@
+Part 1: Thread Creation
+
+1. The output is a random sequence of the characters A, B, C, D, and E because of the context switching that keeps happening in between the threads.
+
+2. The program cannot reach the section of the code where the threads are being created in thr2.cc because of the forever while loop that's running and printing C before it.  
+
+Part 3: Spin locks
+
+ 						System  (Kernel) Time  	User Time 	Real Time
+pthread_mutex (count) 	  	  	 	0m0.000s		0m0.104s	0m0.115s
+spin lock (count_spin with thr_yield) 	  	0m0.320s		0m0.600s	0m0.462s 
+spin_lock (count_spin without thr_yield)  	0m0.000s		0m2.452s	0m1.230s
+
+1. The difference in user time in count_spin with and without the pthread_yield is because we give up the CPU when we are doing a pthread_yield and we let other processes to run. Using pthread_yield lets us use the system time as well.
+
+2. count_spin with pthread_yield uses busy waiting and puts the thread at the end of the running thread queue and wastes CPU cycles. Whereas, count uses normal mutex locks to run the code and it does not use the concept of busy waiting and relies on context switching. pthread_yield uses system time along with the user time, whereas mutex only uses user time. 

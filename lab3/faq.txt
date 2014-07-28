@@ -1,0 +1,765 @@
+ 
+My question with ls aaaa | grep cccc | grep jjjj ssss dfdffdf > out < in 2> err httpd &. If run command on Unix prompt I get Ambiguous input redirect error. I tried doing a man on httpd no manual entry. My question how our to hand httpd & after 2> err?
+
+They are two different commands:
+
+ls aaaa | grep cccc | grep jjjj ssss dfdffdf > out < in 2> err
+
+and
+
+httpd &
+
+In the handout they are in two different lines. 
+  
+  
+  
+ 
+
+Is error checking required for the project? for example:
+
+cat < infile1 < infile2
+
+how do you tell the parser to stop parsing and return to the shell in this example?
+
+Yes.
+
+One solution is that when you detect an error of this kind, you can print an error, set an error flag and let the parsing continue. After the parsing is done, check the error flag and execute the command if there was
+
+no error.
+
+could you please tell me the difference of the two commands:
+
+temp = dup(fdpipe[0]);
+dup2(fdpipe[0], temp);
+
+they look same, but only the first one can let my pipe work well, strange? 
+  
+  
+  
+  
+  
+  
+  
+ 
+Cat_grep.cc program shows how to pipe input output files when we have
+
+a single pipe. i.e.
+
+> cat | grep xxx > outfile
+
+if we have two consecutive pipes like
+
+> ls -l | grep .cc | grep my > outfile
+
+How do we handle file piping?
+
+You will need a loop to do something similar for all the pipes. 
+  
+ 
+
+i'm having some problems with open() on mentor. the man page is worthless, and I can't seem to find the constants declared for readonly mode, append mode, etc... the man page on lore is great, but the constants given there don't work on mentor. since this is to be graded on mentor, could you help
+
+me out? thanks.
+
+O_RDONLY is what is given in the manpage on lore. mentor gives an error.
+
+O_READ given in class isn't recognized either. 
+  
+ 
+
+use creat() instead. there's an example in cat_grep.c
+
+Run
+
+/usr/bin/man -s 2 open
+
+Instead of O_READ it should be O_RDONLY. I told in class to read the man pages because the O_XXX constants may have been misspelled.
+
+open() behavior/arguments is mostly the same in all UNIX environments. 
+  
+  
+  
+  
+  
+ 
+
+Is there a command that will give the number of open file descriptors?
+
+No. there is no such function. 
+  
+ 
+
+I changed my main function to the following to try to catch the
+
+control-C:
+
+main() {
+
+sigset(SIGINT, disp);
+
+Command::_currentCommand.prompt();
+
+yyparse();
+
+}
+
+If a child process is running, pressing control-C will kill the child process and return to the shell prompt. Before I put this command in, pressing control-C while a child process was running would kill the shell. So this part works. But, when there is no child process running(i.e. when you are at the prompt) and you press control-C it kills the whole shell. Is this because it kills the scanner, and how can I fix this?
+
+--
+
+The reason is that the scanner receives the ctrl-c signal by executing the system call "read()" to read characters from the keyboard. read() returns -1 and errno=EINTR, that means that the system call was
+
+interrupted. When read() returns -1 the scanner interprets that it has reached and EOF and the shell exits.
+
+You can either modify the scanner input function to handle this situation, or to use sigaction() to change the ctrl-c signal behavior to SA_RESTART, that retries the system call after interrupted. Check the man pages for sigaction().
+
+A plus in your shell is that after typing ctrl-c your shell jumps to the next line and prints a prompt like other shells do. 
+  
+  
+  
+  
+  
+ 
+
+I implemented the wild card option, borrowing code from REGULAR.CC. It works but only if a wild card is preceeded by a dot. It will work correctly for:
+
+> ls -l .*\.cc
+
+but will NOT recognize
+
+> ls *.cc
+
+Is this acceptable of are we supposed to insert dot before wild card before testing it? 
+  
+ 
+
+wildcards and regular expressions are different.
+
+You will need to translate the wildcards to the corresponding regular expression before processing.
+
+A "*" in a wildcard matches zero or more occurrences of any character except "." when is at the beginning of a word. You will have to translate the "*"s in the wildcard to the corresponding regular expression. 
+  
+ 
+
+Since putenv() takes only an argument, then how do we set A to B ?
+
+just concatenate A and B into one argument.
+
+Since I cannot use setenv in execvp, where can I use it? by just saying setenv A B in our code does not work. The man pages does not say anything about it either.
+
+There is a function putenv() to add variables to the environment.
+
+Check "/usr/bin/man putenv"
+
+The shell process itself has to add the variable to the environment and not a child process because any changes that the child does to its environment do not affect the parent's environment.
+
+There is not standard procedure to remove an environment variable. You will have to implement a procedure that removes the entry from the array.
+
+My question has to do with handling the full path wildcards. Since the dirctories may contain '*'s and '?'s, I assume that we need to find matches for a directory in its parent directory. But for an example like "echo /u*r/blahblah...", in which directory should we search for matches of "u*r"? I might be doing somthing wrong, because this way I'll have to match all the "u*r" like directories recursively for "blahblah"...Please enlighten me.
+
+Start with the simple case of using wildcards in the current directory. Then proceed for wildcards in directories. You will need to use recursion or something equivalent.
+
+We you have a questions about wildcard semantics try executing those commands in csh and try to emulate the same behavior in your shell:
+
+lorenzo 479 % echo /u*r/*i*/*j*
+
+/usr/5bin/eject /usr/5bin/eject.real /usr/5bin/jobs /usr/5bin/join
+
+/usr/5bin/jsh /usr/bin/eject /usr/bin/eject.real /usr/bin/jobs
+
+/usr/bin/join /usr/bin/jsh /usr/include/rje.h /usr/include/setjmp.h
+
+/usr/sbin/getmajor /usr/ucbinclude/setjmp.h
+
+I have no idea how to find a specified variable in environ[i] do we have to compare each entry with the name of the variable we are looking for ?
+
+which C function can we use in this case ?
+
+There is a getenv() function. See the man pages. 
+  
+ 
+
+Hi, I couldn't find where the variable ".environ". The manual says it is under $HOME/pref/, but I don't have that directory. Where is this variable?
+
+declare:
+
+extern char **environ; 
+  
+  
+  
+ 
+
+Should we be able to direct the output of printenv to a file or is it OK
+
+if the output only goes to the screen?
+
+Your shell should be able to redirect the output of printenv and other
+
+builtin commands.
+
+81 enad138-031 ~/CS354/LAB3/src % make
+
+yacc -d shell.y
+
+CC -c y.tab.c
+
+CC -o shell lex.yy.o y.tab.o command.o -ll
+
+Undefined first referenced
+
+symbol in file
+
+compile y.tab.o
+
+advance y.tab.o
+
+ld: fatal: Symbol referencing errors. No output written to shell
+
+make: *** [shell] Error 1
+
+82 enad138-031 ~/CS354/LAB3/src %
+
+This is the error I get when I compile both regular.cc and my shell project. Any idea what the problem is?
+
+you need to link -lgen library when you use compile and advance. 
+  
+ 
+
+My wildcard statements seem to work correctly (i.e., ls *.cc does what is supposed to). But then I get Bus Error (core dumped) following it. I believe this is caused be the free() statements in the clear() function given in command.cc. Is there any reason why this might be and if so how can I fix it?
+
+I think you are copying more data into a string than it
+
+can hold...
+
+example:
+
+str = (char *)malloc(12*sizeof(char));
+
+strcpy(str,"abcabcabcabc"); /* there has to be space in str for the
+
+terminating
+
+'/0' character. so if you copy the string "abcabcabcabc" into str the
+
+'/0' character shall go past the boundary of str*/
+
+You will have a problem like the one you have mentioned, when you do free(str);
+
+Clear() assumes that the arguments are allocated with malloc. Make sure that the arguments you expand in the wildcards are also allocated with malloc. 
+  
+  
+  
+ 
+
+Got another question. By typing just "cd" in our shell, we should return to the home directory but the function chdir does not accept NULL or "~" as an input, which in regular shell, will return to home directory. Hence, what is the string that should be pass to the function so that it will
+
+return to the home directory?
+
+The environment variable HOME has the value of the home directory. Use getenv() to get that value. 
+ 
+
+I have tried to solve item 4 (SIGCHLD) as follows, but everytime the parser is terminated and shell quits. The only way out I could find is to call yyparse() repeatedly, but this does not sound quite right to me! Is there a better way ?
+
+For example :
+
+void disp (int sig) {
+
+int status;
+
+wait3(&status,0,NULL);
+
+printf("Child process ended status%x\n",status);
+
+}
+
+//*********************
+
+main()
+
+{
+
+sigset( SIGINT,SIG_IGN);
+
+sigset( SIGCHLD,disp);
+
+Command::_currentCommand.prompt();
+
+while(1)
+
+yyparse();
+
+}
+
+The problem is that the SIGCHLD (and SIGINT) are produced while the shell
+
+is trying to read from the keyboard. The read() operation is interrupted
+
+and lex thinks that it was EOF and exits.
+
+You have to use sigaction() to set the signal handler for SIGCHLD (and
+
+also for SIGINT).
+
+Set sa_flags to include SA_RESTART to restart system calls if they are
+
+interrupted by a signal. Stevens' book has some example code on sigaction.
+
+I could not figure out how to implement cd [dir] the man pages aren't of much help. Could you give a few hints?
+
+Use the call chdir( s ), where s is the directory you want to cd into.
+
+I guess you arrived to the wrong man page. To see what entries are
+
+available for that command type:
+
+% man -k chdir
+
+chdir cd (1) - change working directory
+
+chdir chdir (2) - change working directory
+
+fchdir chdir (2) - change working directory
+
+Then choose the one that is most likely to have the info you are looking
+
+for or go one by one:
+
+% man -s 2 chdir
+
+System Calls chdir(2)
+
+NAME
+
+chdir, fchdir - change working directory
+
+SYNOPSIS
+
+#include <unistd.h>
+
+int chdir(const char *path);
+
+int fchdir(int fildes);
+
+DESCRIPTION
+
+chdir() and fchdir() cause a directory pointed to by path or
+
+fildes to become the current working directory. The starting 
+  
+  
+  
+ 
+
+I implemented my wildcard. It works okay, but after using it, I will get improper output from the next input. I will receive two different kinds of ouput: sometimes I will receive error message: exec error: Bad address, sometimes the next output will print by four times. (e.g. ls will print the files and directories four times.) I dunno where it goes wrong, since I think I already free all memory I allocate in my function after using them. Could you give me some advices how to debug that?
+
+One common error is not to allocate enough space to store strings when you manipulate them. strcat, strcpy and other functions do not allocate space. You have to allocate space before using it. Also, strdup() only allocates space to store the string you pass as argument and nothing more. Use
+
+malloc() to allocate enough space for strings.
+
+A common place where you manipulate strings is in the wildcard to regular expression coversion.
+
+I would like to know how we are suppose to tell the difference between a file name and a directory name?
+
+For example if you do => echo temp/t*/*
+
+there might be 5 items in the temp directory that match t*, but only one of those items is a directory name.
+
+Do we just try opening all the items with 'opendir' and the one that successly opens is a directory? Is there an easier way to tell the difference?
+
+You could use opendir() and see if it fails or not. Another possibility is to use stat().
+
+after running a few commands in my shell, i get this:
+
+ld.so.1: internal: malloc failed
+
+You are trashin the allocator by freein objects that were not allocated by malloc or by writing out of bounds of objects allocated with malloc.
+
+This is a common mistake.
+
+When expanding wildcards, insertArgument expects you to allocate memory for the argument using malloc or strdup.
+
+insertArgument(strdup(currdir->d_name));
+
+You program will crash if you don't do that when Clear() tries to free all the arguments.
+
+---------------------------------------------
+> I have a question regarding adding quotes to the shell, i.e. cat "i am
+> in quotes" or something like that.  The way that I am doing it is if
+> I see a quoted word, I want to strip it of the quotes and insert that
+> entire argument between the quotes as one argument.
+> Anywho, I added to the lex:  
+
+> reg-expression-for-quotes {
+>   yylval.string_val=strdup(yytext);
+>   return QUOTEWORD;
+>        }
+>
+> I then added the QUOTEWORD token to the yacc, and the following code
+> pasted WAY below. My question is when I make the file it says:
+> "shell.y", line 152: fatal: must specify type for QUOTEWORD
+
+I don't see the reason to return QUOTEWORD.
+
+Yacc doesn't need to know about QUOTEWORD.
+
+In shell.l After recognizing the quoteword, remove the
+quotes, make a duplicate of the string and return WORD.
+
+reg-expression-for-quotes {
+   remove quotes from yytext
+   yylval.string_val=strdup(yytext);
+   return WORD;
+}        
+     
+For yacc a quoted word is just another word.
+
+
+---------------------------------------------
+>
+> For some reason, whenever my signal handler for SIGCHLD gets called, the
+> program exits immediately afterward, with a return code of 0, instead of
+> simply resuming execution.  No errors are printed; it is as if I put a  
+> call to exit(0) in my signal handler.  My code is:
+>
+> void sigchldhandler (int sig) {
+>       wait3 (NULL, 0, NULL);   
+>       printf ("I'm going do die now.\n");
+> }
+>  
+> main () {
+>       sigset (SIGCHLD, sigchldhandler);
+>       // ...
+> }
+>  
+> Output:
+> myshell>echo hello &
+> myshell>hello
+> I'm going to die now.
+> bash$
+> 
+ 
+This is the same problem with the ctrl-c signal handler.
+ 
+The scanner is calling read() when the SIGCHLD (or SIGINT) signal arrives      
+and the read() returns with -1. the scanner confuses this return with EOF   
+and  exits.
+
+You will have to use sigaction() instead of sigset() to set the signal
+handler and change the signal handler behavior in sigaction() to
+SA_RESTART. SA_RESTART makes the OS retry the system calls
+(including read() ) when they have been interrupted by a signal.
+
+Check the man pages for sigaction() or see Steven's book for more info. 
+
+--------------------------------------------
+> My pipes are flaky. If I run:
+> myshell>>cat ctrl-c.cc | grep main
+> main()
+> and that works fine. So I thought they worked.  But when I run:
+> myshell>>cat command.cc | grep main
+> it hangs forever.  It seems that whenever I try to grep a command in a
+> large file it hangs..but not in a small one.  do you have any idea of 
+> why this would be?
+
+I have seen the same problem with other students.
+
+The waitpid() call has to be -outisde- the for loop that executes the
+simple commands. 
+
+waitpid() should wait only for the last process in the pipe-line and not
+for every single simple command.
+
+All the processes in the pipe should run concurrently and the shell
+process should only wait until the last one in the pipe line exits.
+This is assuming that the background flag is not set. If it is set, then  
+the shell will not wait at all.
+
+--------------------------------------------------------------
+First of all please send your questions to 354ta@cs.purdue and not to the
+entire mailing list. Some students are complaining that they are receiving
+too much mail.
+
+> Has anyone managed to get wild card working? Do we really need recursion
+> in order to get wild card working in other directory? 
+
+If the wildcard is simple, like:
+
+ echo  /usr/bin/*
+
+Then you don't need recursion. However, if the wildcard appears in
+multiple directories such as:
+
+ echo /*u*/*b*/l*
+
+Then you need recursion.
+
+> I mean if we could
+> just seperate the path from the file name, for example
+> /usr/bin/*
+> getting /usr/bin/ should be sufficient. Is that true? By getting the  
+> directory, then I should be able to open that directory, and match the
+> "*" with all the files in that directory.
+> But the problem is, directory entry include "." and ".."
+> Thus, when I do
+> >echo /usr/*
+> it returns
+> /usr/. /usr/.. and all the other directory.
+
+Yes. You need to modify the wildcard to regular expression 
+transformation to make sure that the * do not match "." when it appears at
+the beginning.
+
+> Then, if I do   
+> >echo /usr/lib/*
+> it display partly the correct answer, and it core dumps.
+>
+
+Make sure that you are calling strdup() before inserting the directory
+entry as argument.
+
+        insertArtgument( strdup( directoryEntry ) );
+----------------------------------------------------------------------
+> I got my wildcard to work fine, except when there is no match.  Since
+> there are no arguments to insert, it acts as if there is just the command
+> "ls" and prints out everything.  What argument can we insert so that it  
+> won't print anything?
+> 
+  
+If there is no match in the wildcard print an error like other shells do:
+
+dilbert 441 % echo *iii
+echo: No match.
+dilbert 442 %  
+
+The error is printed by the shell and not by the echo command.
+---------------------------------------------------------------> F
+For this phase of the project (part 1) how should we process an error like:
+> ls file > out1 > out2
+> 
+> Should we set
+> Command::_currentCommand._outFile = out1
+>  or
+> Command::_currentCommand._outFile = out2
+> 
+  
+When finding an abiguous redirection print an error.
+  
+During an output redirection if you see that _outFile has been redirected
+already print an error.
+----------------------------------------------------- 
+ 
+> 
+> What are the valid characters for file names and commands. Currently, I'm 
+> using the token definition in shell.l: 
+>       [^ \t\n][^ \t\n]* 
+> 
+> This allows any character. Should the character set be limited to alpha 
+> characters? Do the same rules apply for both file names and commands?
+
+A WORD contains any character different than the special characters and 
+blank characters (|, &, >, <, space, tab, newline).
+
+You don't need to worry about this in part1 but it will be in part 3.
+
+---------------------------------------------------- 
+ 
+
+> When I try a | b | c >& out on csh, it displays the following on the
+> terminal:
+> a: Command not found
+> b: Command not found
+> 
+> and sents "c: Command not found" to out. Is myshell suppose to do this or
+> append all the error messages to out?
+>
+  
+Your shell should append all the errors to out.
+
+In this sense your shell will be different to csh.
+
+---------------------------------------------------------------
+
+> Okay, so I set up the handler to catch SIGCHLD and then it calls wait. The
+> spec says we should print out the pid of the background process that
+> completes. How do we make it so we only print out the ids of background
+> processes? Do we have to keep a list of which processes were running in the
+> background and check against them in the sigchld handler?
+
+Yes. Keep a list of the processes that are in the background.
+
+----------------------------------------------------------------
+> How do we stop the parser from eating the Ctrl-C? My signal handler is being
+> called, but the parser still generates a syntax error because it's parsing
+> the Ctrl-c.
+> 
+  
+The problem is that ctrl-c causes a signal SIGINT that is interrupting the
+input procedure in lex. The input procedure returns -1 and lex is
+confusing that with an EOF.
+  
+To prevent this use sigaction() instead of sigset() to set the SIGINT
+signal procedure. 
+  
+In sigaction set the flag SA_RESTART that will retry automatically the
+input procedure if interrupted.
+
+In your main():
+ 
+ 
+        struct sigaction signalAction;
+        signalAction.sa_handler = sigIntHandler;
+        sigemptyset(&signalAction.sa_mask);
+        signalAction.sa_flags = SA_RESTART;
+
+        int error = sigaction(SIGINT, &signalAction, NULL );
+        if ( error ) {
+                perror( "sigaction" );
+                exit( -1 );
+        }
+
+Remember that you have to set signal handlers only once.
+
+------------------------------------------------------------
+
+>   My wildcard works fine, but the output file order is different. For
+> example,  when the command is  "echo /usr/bin/lib?.a
+> 
+>     from tsh:
+>    /usr/lib/libc.a /usr/lib/libl.a /usr/lib/libm.a /usr/lib/libw.a
+> /usr/lib/liby.a
+>
+>     but from my shell:
+>     /usr/lib/libw.a /usr/lib/libc.a /usr/lib/libl.a /usr/lib/liby.a
+> /usr/lib/libm.a
+>
+>   how does it happen? Do you think there is anything can control the
+> order of reading files when using "readdir"?
+  
+You have to sort the files before inserting them as arguments in the
+command table.
+
+Use qsort(). See the man pages "man -s 3c qsort"
+------------------------------------------------------------
+
+> > Is there a way to obtain some one elsees home directory? I thought about
+> > using environmental variablaes but they are only set at login. Is there 
+> > some functions that returns the home directoy given a login name?
+> > 
+    
+look at
+man getpwnam
+
+Use the function getpwnam(char*)
+
+it will return a passwd struct..
+you can get the information from the struct
+
+------------------------------------------------------------
+
+Some additional details on the implementation of the subshell...
+
+1. As I explained in class, do not use temporal files to implement     
+the subshell. The implementation using temporal files was already done
+last semester and I want it to be different this semester. Use two pipes 
+to communicate the parent and the child. Using a temporal file will not
+give you any credit.                                                 
+
+2. To make sure that the subshell process finishes, make the parent write
+an extra "exit\n" command to the subshell process.
+
+3. The parent should read character by character from the pipe and fill in
+the output buffer instead of trying to read the entire buffer length. The 
+read command will return -1 when the eof is reached. The parent should
+close the side of the pipe it is not using before reading the output.
+
+4. Make sure that you don't overflow the buffer array. Enlarge it as 
+needed.
+
+5. The function in lex that returns characters to the lex input buffer is
+called:
+
+        int yy_unput(int c)
+
+This function returns one character back to lex. Remember to unput the 
+characters in reverse order. This is not the best solution since the   
+number of characters you may unput has a limit. A better implementation
+is to redefine the int input(void) macro in shell.l. See the c file generated by lex.                               
+           
+--------------------------------------------------------------------
+> i'm having a lot of problems getting qsort to work . . . my wildcarding
+> works for single directories, and so then I call qsort((void *)table[0],
+> numEle - 1, sizeof (char*), compare); where compare takes the two void
+> *'s, and then returns the strcmp of two char*'s  . . . it tends to lose
+> elements, and does nothing at all like sorting.  Any suggestions?
+> THanks
+>
+> Beth
+>
+
+Maybe you mean:
+
+qsort((void *)&table[0], numEle, sizeof (char*), compare)
+
+Also. remember that the "compare" function is receiving as arguments
+two pointers of type (char**), that is the address of each entry in  the
+table. You will have to do something like:
+
+compare(void * a, void *b )
+{
+  char *s1 = *(char**)a;
+  char *s2 = *(char **)b;
+
+  compare s1 and s2
+
+}
+-------------------------------------------------------------------------
+Problems after returning from execvp...
+
+Some students are having problems with test13. It looks like when
+execvp fails and the child process exits, the stdin is reset, creating
+an infinite loop.
+
+The problem is because exit() seems to be calling lseek that resets the
+stdin file pointer to start all over again.
+
+To fix this problem, when execvp fails, call _exit(1) instead of exit(1).
+This will cause the child process to immediately exit without flushing eny 
+files and reseting the input.
+
+if (ret == 0) {
+     execvp(_simpleCommands[i]->_arguments[0], _simpleCommands[i]->_arguments);
+     perror("execvp");
+     _exit(1);
+}
+
+-------------------------------------------------------------------------
+To implement the subshell you need to use unput(c).
+yyunput() is a static function that can be used only inside
+shell.l To use anywhere, they can define the following
+at the top of shell.l
+
+-----------------------------
+
+%{
+
+#include 
+#include "y.tab.h"
+
+// yyunput is a static function. unput(c) is
+// a macro that calls yyunput
+static  void yyunput (int c,char *buf_ptr  );
+
+// You can wrap unput here inside a function myunput(c)
+// that they can use here or outside shell.l
+
+void myunput(int c) {
+    unput(c);
+    }
+
+
+    %}
+
+    %%
+
+    ....
+-------------------------------------------------------------------------

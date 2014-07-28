@@ -1,0 +1,270 @@
+ARITRA SAMANTA
+CS252 
+PUID: 0025843674
+
+Q1>
+
+True
+True
+True
+True
+False
+
+Q2>
+
+Fields of an I-node are:
+
+Flags
+Modes
+Owners
+Time Stamps
+Reference Counts
+Size
+Major number
+Minor number
+
+Q3>
+
+Deadlock: It happens when one or more threads will have to block forever (or until it is terminated) for a resourse that will never be available.
+
+Starvation: Starvation may happen to a thread if it waits for a long time for a resource to become available. It is not as serious as deadlock.
+
+Q4>
+
+Threads: Threads are created faster, and they have faster context switch and faster communication using global variables. They are less robust and there is  no synchronization between them.
+
+Processes: The only advantage of a process is that they do not have any synchronization problem. Otherwise, they are slower to be created and have slower context switch and slower communications because of pipes and files.
+
+Q5>
+
+/etc/passwd
+/etc/group
+/etc/inetd.conf
+
+Q6>
+
+a) TIa, T2d, T2e, T3g, T3h -> locked.
+
+b) T1->a->T2->d->T2->e->T3->g->T3->h->T1 (mutex m3 is locked).
+
+c)
+
+T1:
+	a) mutex_lock(&m1);
+	b) mutex_lock(&m3);
+	c) mutex_lock(&m5);
+T2:
+	d) mutex_lock(&m2);
+	e) mutex_lock(&m4);
+	f) mutex_lock(&m5);
+
+T3:
+	g) mutex_lock(&m1);
+	h) mutex_lock(&m3);
+	i) mutex_lock(&m4);
+
+Q7>
+
+// There is a chance that the array can get messed up and multiple threads might assign differernt values.
+
+#include <pthread.h>
+#define MAXCOUNT;
+int count = 0;
+int array[MAXCOUNT];
+
+pthread_mutex_t mutex;
+
+int addToArray(int value)
+{
+	pthread_mutex_lock(&mutex);
+	if( count == MAXCOUNT )
+	{
+		pthread_mutex_unlock(&mutex);
+		return -1;
+	}
+	
+	array[count]=value;
+	count = count + 1;
+	int temp = count - 1;
+
+	pthread_mutex_unlock(&mutex);
+	return temp;
+}
+
+Q8>
+
+a) Program calls write(fd, buffer, nbytes).
+b) Write wrapper in libc generates a software interrupt for system call.
+c) OS checks in interrupt handler the arguments (fd is valid file descriptor and is opened in write mode, [buffer, buffer + nbytes – 1] is valid memory address. If error found, return -1 and set errno.
+d) OS tells device to write to fd.
+e) OS puts current process in wait state until disk operation is finished. OS switches to other processes.
+f) When disk is done, it generates an interrupt.
+g) Interrupt handler puts current process in ready state and the process will be scheduled by the OS.
+
+Q9>
+
+# !/bin/bash
+
+FILE=$1
+COUNT=1
+STAT=0
+BACKUP="backup.tmp"
+OUTPUT="out.tmp"
+cp $FILE $BACKUP
+
+while [ $COUNT -gt $STAT ];
+do
+	sleep 60
+	diff $FILE $BACKUP > $OUTPUT
+	if [ -s $OUTPUT ];
+		then
+			/usr/bin/mailx -s "FILE CHANGED" $USER < $OUTPUT
+	done
+	cp $FILE $BACKUP
+done
+
+Q10>
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <wait.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main(int argc, const char **argv)
+{
+	if( argc != 4 )
+		return 0;
+
+	int default_in = dup(0);
+	int default_out = dup(1);
+	//int default_err = dup(2);
+
+	int pipefd[2];
+	
+	if( pipe(pipefd) == -1 )
+	{
+		perror("Pipe Error!!\n");
+		exit(1);
+	}
+	
+	int infd = open(argv[2], O_RDONLY);
+	if( infd < 0 )
+	{
+		perror("Error inputfile\n");
+		exit(1);
+	}
+
+	dup2(infd, STDIN_FILENO);
+	close(infd);
+
+	dup2(pipefd[1], STDOUT_FILENO);
+	close(pipefd[1]);
+
+	int ret = fork();
+	if( ret == 0 )
+	{
+		close(pipefd[0]);
+
+		char *args[3];
+		args[0] = "grep";
+		args[1] = strdup(argv[1]);
+		args[2] = NULL;
+
+		execvp(args[0], args);
+		perror("execvp\n");
+		_exit(-1);
+	} 
+	else if( ret < 0 )
+	{
+		perror("fork\n");
+		exit(1);
+	}
+
+	int outfd = open(argv[3], O_CREAT|O_WRONLY|O_APPEND, 0666);
+	if( outfd < 0 )
+	{
+		perror("Error outputfile\n");
+		exit(1);
+	}
+	
+	dup2(outfd, STDOUT_FILENO);
+	close(outfd);
+
+	dup2(pipefd[0], STDIN_FILENO);
+	close(pipefd[0]);
+
+	ret = fork();
+	if( ret == 0 )
+	{
+		close(pipefd[1]);
+
+		char *args[2];
+		args[0] = "sort";
+		args[1] = NULL;
+		
+		execvp(args[0], args);
+		perror("Execvp failed\n");
+		_exit(-1);		
+	}
+	else
+	{
+		perror("fork\n");
+		exit(1);
+	}
+
+	dup2(default_in, 0);
+	close(default_in);
+	dup2(default_out, 1);
+	close(default_out);
+	
+	waitpid( ret, 0, 0 );
+
+	return 0;
+}
+
+Q11>
+
+#include <synch.h>
+#include <pthread.h>
+
+class SynchronizedStackSemaphores {
+    // Add your member variables here
+    int top;
+    int * stack;
+    sema_t emptySem, fullSem;
+    pthread_mutex_t lock;
+    public:
+        SynchronizedStackSemaphores(int maxStackSize);
+        void push(int val);
+        int pop();
+};
+
+SynchronizedStackSemaphores::SynchronizedStackSemaphores(int maxStackSize) {
+        top = 0;
+        stack = new int[maxStackSize];
+        sema_init(&emptySem, 0, USYNC_THREAD, NULL);
+        sema_init(&fullSem, maxStackSize, USYNC_THREAD, NULL);
+        pthread_mutex_init(&lock, NULL);
+}
+
+void SynchronizedStackSemaphores::push(int val) {
+        sema_wait(&fullSem);
+        pthread_mutex_lock(&lock);
+        stack[top] = val;
+        top++;
+        pthread_mutex_unlock(&lock);
+        sema_post(&emptySem);
+}
+
+int SynchronizedStackSemaphores::pop(){
+        sema_wait(&emptySem);
+        pthread_mutex_lock(&lock);
+        int retval = stack[top-1];
+        top--;
+        pthread_mutex_unlock(&lock);
+        sema_post(&fullSem);
+        return retval;
+}
